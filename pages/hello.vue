@@ -1,52 +1,68 @@
 <template>
     <v-layout>
         <v-flex class="text-center">
-            <div class="text-center">
-                <logo />
-                <vuetify-logo />
-            </div>
-            <blockquote class="blockquote">
-                &#8220;Hello Vue Nuxt&#8221;
-                <footer>
-                    <small>
-                        <em>&mdash;John Johnson</em>
-                    </small>
-                </footer>
-            </blockquote>
             <div>
                 <!-- ログイン中に表示される画面 -->
                 <div v-if="isAuthenticated">
                     {{ user.email }}でログイン中です<br />
-                    <button @click="logout">ログアウト</button><br />
+                    <v-btn @click="logout">ログアウト</v-btn><br />
                     <a href="/inspire">メンバーページへ</a>
                 </div>
                 <!-- ログインしていない時に表示される画面 -->
                 <div v-else>
                     メール<br />
-                    <input v-model="email" type="text" /><br />
+                    <v-text-field type="email" label="メール"></v-text-field>
                     パスワード<br />
-                    <input v-model="password" type="password" /><br />
-                    <button @click="login">ログイン</button>
+                    <v-text-field
+                        label="パスワード"
+                        type="password"
+                    ></v-text-field>
+                    <v-btn @click="login">ログイン</v-btn>
                 </div>
             </div>
-            <div class="btn" @click="login">選ぶ</div>
-            <v-list>
-                <v-list-item v-for="user in userList" :key="user">
-                    <v-list-item-icon>
-                        <v-icon v-if="true" color="pink">mdi-star</v-icon>
-                    </v-list-item-icon>
+            <v-btn class="btn" @click="login">選ぶ</v-btn>
+            <v-row no-gutters>
+                <v-col cols="4"
+                    ><v-flex class="text-center">
+                        <v-list max-width="500px">
+                            <v-list-item v-for="user in userList" :key="user">
+                                <v-list-item-icon>
+                                    <v-icon v-if="false" color="pink"
+                                        >mdi-star</v-icon
+                                    >
+                                </v-list-item-icon>
 
-                    <v-list-item-content>
-                        <v-list-item-title
-                            v-text="user.name"
-                        ></v-list-item-title>
-                    </v-list-item-content>
+                                <v-list-item-content>
+                                    <v-list-item-title
+                                        v-text="user.uid"
+                                    ></v-list-item-title>
+                                </v-list-item-content>
 
-                    <v-list-item-avatar>
-                        <v-img :src="user.userIcon"></v-img>
-                    </v-list-item-avatar>
-                </v-list-item>
-            </v-list>
+                                <v-list-item-content>
+                                    <v-list-item-title
+                                        v-text="user.name"
+                                    ></v-list-item-title>
+                                </v-list-item-content>
+
+                                <v-list-item-avatar>
+                                    <v-img :src="user.userIcon"></v-img>
+                                </v-list-item-avatar>
+                            </v-list-item>
+                        </v-list> </v-flex
+                ></v-col>
+                <v-col cols="8">
+                    <v-textarea
+                        class="mt-0"
+                        solo
+                        label="Solo textarea"
+                        auto-grow
+                        rows="1"
+                        value=""
+                        placeholder="メッセージを入力してください. "
+                    >
+                    </v-textarea>
+                </v-col>
+            </v-row>
         </v-flex>
     </v-layout>
 </template>
@@ -55,14 +71,8 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 import firebase from '~/plugins/firebase'
 import db from '~/plugins/firebase-db'
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
 
 export default {
-    components: {
-        Logo,
-        VuetifyLogo
-    },
     data() {
         return {
             count: 0,
@@ -81,6 +91,7 @@ export default {
             this.setUser(user)
         })
         db.collection('UserList')
+            .orderBy('uid')
             .get()
             .then((querySnapshot) => {
                 const array = []
